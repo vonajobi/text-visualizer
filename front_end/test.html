@@ -9,48 +9,16 @@
 </head>
 <body>
     <h1>Word Similarity Vizualizer</h1>
-    <button id="loadGraph">Load Graph??</button>
-    <button id="addWord">Add word</button>
-    <input type="text" id="word-input" placeholder="Enter a word" />
-    <button onclick="fetchSimilarWords()">Find Similar Words</button>
+    <script src="graphScript.js"></script>
+    <div style="display: flex; flex-direction: row; align-items: center; gap: 5px; margin-bottom: 20px;">
+        <input type="text" id="word-input" placeholder="Enter a word" />
+        <button onclick="fetchGraphData()" >Load Graph??</button>
+
+    </div>
+    <div style="display: flex; flex-direction: row; gap: 10px;">
+        <button id="addWord">Add word</button>
+    </div>
     <div id="graph"></div>
 
-    <script>
-        // async function fetchSimilarWords() {
-        //     const word = document.querySelector("#word-input").value;
-        //     if (!word) {
-        //         alert("Please enter a word");
-        //         return;
-        //     }
-
-        //     const response = await fetch(`http://127.0.0.1:5000/similar_words?word=${word}`);
-
-        //     if (!response.ok) {
-        //         const data = await response.json();
-        //         alert(data.error || data.message);
-        //         return;
-        //     }
-
-        //     const result = await response.json();
-        //     displayResults(result);
-        // }
-
-        // function displayResults(results) {
-        //     const resultsContainer = document.querySelector("#results");
-        //     resultsContainer.innerHTML = ''; // Clear previous results
-
-        //     if (results.length === 0) {
-        //         resultsContainer.innerHTML = '<p>No similar words found.</p>';
-        //         return;
-        //     }
-
-        //     results.forEach(item => {
-        //         const resultElement = document.createElement('div');
-        //         resultElement.classList.add('result-item');
-        //         resultElement.innerHTML = `<span>${item.word}</span>: Similarity Score ${item.similarity}`;
-        //         resultsContainer.appendChild(resultElement);
-        //     });
-        // }
-    </script>
 </body>
 </html>

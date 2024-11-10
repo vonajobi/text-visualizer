@@ -15,6 +15,6 @@ def get_word_embedding(word: str)->torch.Tensor:
             outputs = model(**inputs)
 
         word_embed = outputs.last_hidden_state.mean(dim=1).squeeze()
-        EMBEDDED_CACHE.append(word_embed)
+        EMBEDDED_CACHE[word]=(word_embed)
 
         return word_embed

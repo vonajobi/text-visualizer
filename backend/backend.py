@@ -1,33 +1,32 @@
+import logging
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from functools import lru_cache
-from similarity import *
-from files import NODE_FILE_PATH
+from similarity import get_most_similar_words, read_file, write_file, get_data, add_node
+from files import DATA_FILE_PATH
 
 app = Flask(__name__)
 CORS(app)
+logging.basicConfig(level=logging.DEBUG)
 
-# sample vocab, change out to Hollow Craft json file
-# sample_vocab = ['example', 'sample', 'demonstration', 'illustration', 'test', 'trial', 'Figma', 'pattern', 'web-dev']
-
-node_list = read_file(NODE_FILE_PATH)
-sample_vocab = [node['word'] for node in node_list]
-
-@lru_cache(maxsize=500)
 @app.route('/similar_words', methods=['GET'])
 def similar_words():
     word = request.args.get('word')
     if not word:
-        return jsonify({'error':'Provide a word'}), 400
+        return jsonify({'error': 'Provide a word'}), 400
 
-    # sample vocab is a list containg all the node words
+    data = get_data()
+    node_list = data["nodes"]
+    sample_vocab = [node['word'] for node in node_list if 'word' in node]
+    app.logger.debug(f"Sample vocab: {sample_vocab}")
 
     if not sample_vocab:
-        return jsonify({'error': 'Vocabularay is empty'}), 404
+        app.logger.debug(f"{DATA_FILE_PATH}, {sample_vocab}")
+        return jsonify({'error': 'Vocabulary is empty'}), 404
     elif word not in sample_vocab:
-        return jsonify({'error': f'Word {word} not found in vocabularay'}), 404
+        return jsonify({'error': f'Word {word} not found in vocabulary'}), 404
 
-    result = get_most_similar_words(word, sample_vocab)
+    result = get_most_similar_words(word)
     if not result:
         return jsonify({'message': f'No similar word found for {word}'}), 200
 
@@ -38,23 +37,16 @@ def add_word():
     new_word = request.json['word']
     if not new_word:
         return jsonify({'error': 'No word provided'}), 400
+
+    data = get_data()
+    node_list = data["nodes"]
+    sample_vocab = [node['word'] for node in node_list if 'word' in node]
+
     if new_word not in sample_vocab:
-        sample_vocab.append(new_word)
-    
-    simi_score = get_most_similar_words(new_word, sample_vocab)
-    return jsonify({'mesage': f'{new_word.capitalize()} added'})
+        add_node(new_word)
+        app.logger.debug(f"Added new word: {new_word}")
 
-@app.route('/get_network_data', methods=['GET'])
-def get_network_data():
-    similarities = read_file(SIMILARITY_EDGE_FILE_PATH)
-    nodes = [{'id': word} for word in sample_vocab]
-    links = []
-    for similarity in similarities:
-        links.append({'source': similarity['word1'],
-                       'target': similarity['word2'], 
-                       'score': similarity['score']})
-
-    return jsonify({'nodes': nodes, 'links': links})
+    return jsonify({'message': f'Word {new_word} added successfully'})
 
 if __name__ == '__main__':
     app.run(debug=True)

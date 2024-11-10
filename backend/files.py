@@ -1,2 +1,1 @@
-SIMILARITY_EDGE_FILE_PATH = 'similarities.json'
-NODE_FILE_PATH = 'data.json'
+DATA_FILE_PATH = "backend/data.json"

@@ -2,72 +2,101 @@ from sklearn.metrics.pairwise import cosine_similarity
 from word_embed import get_word_embedding
 from typing import List, Dict, Union
 import os, json
-from files import *
+from files import DATA_FILE_PATH
+import logging
 
-def write_file( file_path: str, entry: Dict[str, Union[str, float]])-> None:
-    if not os.path.exists(file_path):
-        with open(file_path, 'r', encoding='utf-8') as f:
-            data = json.load()
-    else: 
-        data = []
 
-    data.append(entry)
+
+def write_file( file_path: str, data: Dict[str, Union[List[Dict[str, str]], Dict[str, float]]])-> None:
     with open(file_path, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=4)
 
 
-def read_file(file_path: str) -> List[Dict[str, Union[str, float]]]:
+def read_file(file_path: str) -> Dict[str, Union[List[Dict[str, str]], Dict[str, float]]]:
     if not os.path.exists(file_path):
         with open(file_path, 'w', encoding='utf-8') as f:
-            json.dump([], f)
+            json.dump({"nodes": [],"similarities": {}}, f)
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except json.JSONDecodeError:
+        return {"nodes": [], "similarities": {}}
 
-    with open(file_path, 'r', encoding='utf-8') as f:
-        return json.load(f)
+def get_data()-> Dict[str, Union[List[Dict[str, str]], Dict[str, float]]]:
+    return read_file(DATA_FILE_PATH)
 
+
+def add_similarity(word1: str, word2: str, similarity: float) -> None:
+    data = get_data()
+    data["similarities"][f"{word1}_{word2}"] = round(float(similarity), 5)
+    write_file(DATA_FILE_PATH, data)
+
+
+def add_node(word: str) -> None:
+    data = get_data()
+    data["nodes"].append({"word": word})
+    write_file(DATA_FILE_PATH, data)
 
 
 def calc_similarity(word1: str, word2: str)-> float:
-    sample_cache = read_file(SIMILARITY_EDGE_FILE_PATH)
-    if (word1, word2) in sample_cache:
-        return sample_cache[(word1, word2)]
-    if(word2, word1) in sample_cache:
-        return sample_cache[(word2, word1)]
+    sample_cache = get_data()
+    similarities = sample_cache["similarities"]
+
+    if (word1, word2) in similarities:
+        return similarities[(word1, word2)]
+    if(word2, word1) in similarities:
+        return similarities[(word2, word1)]
 
     embedd1 = get_word_embedding(word1)
     embedd2 = get_word_embedding(word2)
 
-    for d in read_file(sample_cache):
-        sample_cache.append({(d['word1'], d['word2']): d['similarity']})
-
-
     similarity_score = cosine_similarity(embedd1.reshape(1,-1).numpy(),
                                    embedd2.reshape(1,-1).numpy()
                                    )[0][0]
-    write_file(SIMILARITY_EDGE_FILE_PATH, {'word1': word1, 'word2': word2, 'similarity': similarity_score})
+    add_similarity(word1, word2, similarity_score)
 
-    return similarity_score
+    return float(similarity_score)
 
 # read data.json file which contains each word as a node
 # read similarites.json which represents the links
-def get_most_similar_words(new_node: str, top_n=10)-> List[Dict[str, Union[str, float]]]:  
-    similarities = []
+def get_most_similar_words(new_node: str, top_n: int=10)-> List[Dict[str, Union[str, float]]]:  
 
-    node_list = read_file(NODE_FILE_PATH)
-    for dict in node_list:
-        if new_node not in dict:
-            write_file(NODE_FILE_PATH, {'word': new_node})
+    data = get_data()
+    node_list = data["nodes"]
+    similarities = data["similarities"]
 
-            for node in node_list:
-                existing_word = node['word']
-                if existing_word != new_node:                        # if the val in the key val pair not equal the new word
-                    similarity = calc_similarity(new_node, existing_word)
-                    similarities.append((existing_word, similarity))           
-                    write_file(SIMILARITY_EDGE_FILE_PATH, {'word1': new_node, 'word2': existing_word, 'similarity': similarity})
+    # Check if the new node already exists
+    if not any(node['word'] == new_node for node in node_list):
+        add_node(new_node)
+
+        for node in node_list:
+            existing_word = node['word']
+            if existing_word != new_node:
+                similarity = calc_similarity(new_node, existing_word)
+                similarities[f"{new_node}_{existing_word}"] = float(similarity)
+                similarities[f"{existing_word}_{new_node}"] = float(similarity)
+
+        data["similarities"] = similarities
+        write_file(DATA_FILE_PATH, data)
+
+    similar_words = [
         
-        sorted_similar_w = sorted(similarities, key=lambda x:x[1], reverse=True)[:top_n]
-        result = []
-        for w, score in sorted_similar_w:
-            result.append({'word': w, 'similarity': round(score, 3)})
+        {"word": word_pair.split('_')[1], "similarity": round(score, 5)}
+        for word_pair, score in similarities.items()
+        if new_node in word_pair
+    ]
+    sorted_similar_words = sorted(similar_words, key=lambda x: x["similarity"], reverse=True)[:top_n]
 
-    return result
+    return sorted_similar_words
 
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+if __name__ == '__main__':
+    test_word = "Earth"
+    sample = read_file(DATA_FILE_PATH)
+    for w in sample:
+        similar_words = calc_similarity(test_word, w)
+    if not similar_words:
+        logger.info(f"No similar word found for {test_word}")
+    else:
+        logger.info(f"Similar words for {test_word}: {similar_words}")
