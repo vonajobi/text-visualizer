@@ -1,0 +1,49 @@
+Endpoint: /similar_words
+    Method: GET
+    Description: This endpoint takes a word as input and returns a list of the top similar words from the predefined vocabulary along with their similarity scores.
+Parameters:
+    word (query parameter): The word for which you want to find similar words. It should be a string and must be present in the request.
+
+    Example: ?word=example
+    Responses:
+    Success (200 OK):
+
+    Content-Type: application/json
+    Response:
+    A list of dictionaries, each containing a word and its similarity score.
+    json
+    [
+        {"word": "example", "similarity": 0.752},
+        {"word": "sample", "similarity": 0.745},
+        {"word": "demonstration", "similarity": 0.734}
+    ]
+    Error (400 Bad Request): If the word parameter is missing or the vocabulary is empty.
+
+    Response:
+    json
+    {"error": "Missing 'word' parameter"}
+    Error (404 Not Found): If the word is not found in the vocabulary.
+
+    Response:
+    json
+    {"error": "Word 'example' not found in vocabulary."}
+    Error (200 OK with message): If no similar words are found for the provided word.
+
+    Response:
+    json
+    {"message": "No similar words found for 'example'."}
+
+Example Request:
+    GET http://127.0.0.1:5000/similar_words?word=example
+    Example Response (Success):
+    json
+    [
+        {"word": "example", "similarity": 0.752},
+        {"word": "sample", "similarity": 0.745},
+        {"word": "demonstration", "similarity": 0.734}
+    ]
+Example Response (Error - Missing Parameter):
+    json
+    {
+    "error": "Missing 'word' parameter"
+    }

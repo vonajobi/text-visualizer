@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Similarity Visualizer</title>
+    <link rel="stylesheet" href="style.css"> 
+    <script src="https://d3js.org/d3.v6.min.js"></script>   
+</head>
+<body>
+    <h1>Word Similarity Vizualizer</h1>
+    <button id="loadGraph">Load Graph??</button>
+    <button id="addWord">Add word</button>
+    <input type="text" id="word-input" placeholder="Enter a word" />
+    <button onclick="fetchSimilarWords()">Find Similar Words</button>
+    <div id="graph"></div>
+
+    <script>
+        // async function fetchSimilarWords() {
+        //     const word = document.querySelector("#word-input").value;
+        //     if (!word) {
+        //         alert("Please enter a word");
+        //         return;
+        //     }
+
+        //     const response = await fetch(`http://127.0.0.1:5000/similar_words?word=${word}`);
+
+        //     if (!response.ok) {
+        //         const data = await response.json();
+        //         alert(data.error || data.message);
+        //         return;
+        //     }
+
+        //     const result = await response.json();
+        //     displayResults(result);
+        // }
+
+        // function displayResults(results) {
+        //     const resultsContainer = document.querySelector("#results");
+        //     resultsContainer.innerHTML = ''; // Clear previous results
+
+        //     if (results.length === 0) {
+        //         resultsContainer.innerHTML = '<p>No similar words found.</p>';
+        //         return;
+        //     }
+
+        //     results.forEach(item => {
+        //         const resultElement = document.createElement('div');
+        //         resultElement.classList.add('result-item');
+        //         resultElement.innerHTML = `<span>${item.word}</span>: Similarity Score ${item.similarity}`;
+        //         resultsContainer.appendChild(resultElement);
+        //     });
+        // }
+    </script>
+</body>
+</html>
