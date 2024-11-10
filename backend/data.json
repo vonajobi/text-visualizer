@@ -31,5 +31,15 @@
             "word": "Wave"
         }
     ],
-    "similarities": {}
+    "similarities": {
+        "Earth_Wind": 0.8102922439575195,
+        "Earth_Water": 0.8415007591247559,
+        "Earth_Fire": 0.8170246481895447,
+        "Earth_Wildfire": 0.6743742227554321,
+        "Earth_Plant": 0.7395306825637817,
+        "Earth_Grass": 0.7400826215744019,
+        "Earth_Lava": 0.7924935817718506,
+        "Ash_Earth": 0.8248927593231201,
+        "Earth_Wave": 0.8017499446868896
+    }
 }
