@@ -48,5 +48,20 @@ def add_word():
 
     return jsonify({'message': f'Word {new_word} added successfully'})
 
+@app.route('/get_network_data', methods=['GET'])
+def get_network_data():
+    data = get_data()
+    nodes = [{'id': node['word']} for node in data['nodes']]
+    links = []
+    for key, value in data['similarities'].items():
+        source, target = key.split('_')
+        link = {
+            'source': source,
+            'target': target,
+            'value': value
+        }
+        links.append(link)
+    return jsonify({'nodes': nodes, 'links': links})
+
 if __name__ == '__main__':
     app.run(debug=True)

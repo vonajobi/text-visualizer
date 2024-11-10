@@ -49,8 +49,16 @@ button:hover{
     fill: #69b3a2;
     stroke: #fff;
     stroke-width: 1.5px;
-  }
+}
   .link {
     stroke: #999;
     stroke-opacity: 0.6;
   }
+#graph{
+    width: 100vw;
+    height: 600px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+

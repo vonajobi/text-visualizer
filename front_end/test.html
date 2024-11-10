@@ -9,16 +9,21 @@
 </head>
 <body>
     <h1>Word Similarity Vizualizer</h1>
-    <script src="graphScript.js"></script>
     <div style="display: flex; flex-direction: row; align-items: center; gap: 5px; margin-bottom: 20px;">
         <input type="text" id="word-input" placeholder="Enter a word" />
-        <button onclick="fetchGraphData()" >Load Graph??</button>
-
+        <button id="loadGraph">Load Graph??</button>
+        
     </div>
     <div style="display: flex; flex-direction: row; gap: 10px;">
         <button id="addWord">Add word</button>
     </div>
     <div id="graph"></div>
+    <script src="graphScript.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchGraphData();
+        });
+    </script>
 
 </body>
 </html>

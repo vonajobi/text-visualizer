@@ -68,18 +68,17 @@ def get_most_similar_words(new_node: str, top_n: int=10)-> List[Dict[str, Union[
     if not any(node['word'] == new_node for node in node_list):
         add_node(new_node)
 
-    for node in node_list:
-        existing_word = node['word']
-        if existing_word != new_node:
-            similarity = calc_similarity(new_node, existing_word)
-            # json doesnt allow tuples womp womp :/
-            key = f"{min(new_node, existing_word)}_{max(new_node, existing_word)}"
-            similarities[key] = similarity
-            logger.debug(f"Calculated similarity between {new_node} and {existing_word}: {similarity}")
+        for node in node_list:
+            existing_word = node['word']
+            if existing_word != new_node:
+                similarity = calc_similarity(new_node, existing_word)
+                # json doesnt allow tuples womp womp :/
+                key = f"{min(new_node, existing_word)}_{max(new_node, existing_word)}"
+                similarities[key] = similarity
+                logger.debug(f"Calculated similarity between {new_node} and {existing_word}: {similarity}")
 
-    data["similarities"] = similarities
-    write_file(DATA_FILE_PATH, data)
-    print('check 5')
+        data["similarities"] = similarities
+        write_file(DATA_FILE_PATH, data)
     similar_words = [
         
         {"word": word_pair.split('_')[1], "similarity": round(score, 5)}
@@ -89,12 +88,12 @@ def get_most_similar_words(new_node: str, top_n: int=10)-> List[Dict[str, Union[
     sorted_similar_words = sorted(similar_words, key=lambda x: x["similarity"], reverse=True)[:top_n]
     return sorted_similar_words
 
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger(__name__)
-if __name__ == '__main__':
-    test_word = "Earth"
+# logging.basicConfig(level=logging.DEBUG)
+# logger = logging.getLogger(__name__)
+# if __name__ == '__main__':
+#     test_word = "Earth"
     
-    sample = get_most_similar_words(test_word)
-    if not sample:
-        print('error')
+#     sample = get_most_similar_words(test_word)
+#     if not sample:
+#         print('error')
     
