@@ -47,8 +47,6 @@ button:hover{
 }
 .node {
     fill: #69b3a2;
-    stroke: #fff;
-    stroke-width: 1.5px;
 }
   .link {
     stroke: #999;
