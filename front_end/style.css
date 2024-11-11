@@ -7,10 +7,15 @@ body {
     /* column-gap: 10px; */
     align-items: center;
     padding: 20px;
+    overflow: hidden;
+    background-image: radial-gradient(at center bottom, rgb(135, 223, 252), rgb(56, 189, 248), rgb(49, 46, 129));
+    
 }
 
 h1 {
     margin-bottom: 20px;
+    color: #69b3a2;
+
 }
 
 input[type="text"] {
@@ -46,7 +51,7 @@ button:hover{
     font-weight: bold;
 }
 .node {
-    fill: #69b3a2;
+    fill: #69b3a2d5;
 }
   .link {
     stroke: #999;

@@ -8,9 +8,18 @@ function fetchGraphData() {
       });
 }
 
+// function fetch2DCoordinates(word) {
+//   fetch(`http://127.0.0.1:5000/get_2d_coordinates?word=${word}`)
+//     .then(response => response.json())
+//     .then(data => {
+//       render2DGraph(data);
+//     });
+// }
+
+
 //  graph D3.js
 function renderGraph(nodes, links) {
-    const width = 800;
+    const width = window.innerWidth;
     const height = 600;
 
     // Clear any existing SVG elements
@@ -38,9 +47,9 @@ function renderGraph(nodes, links) {
       .enter().append('g')
       .attr('class', 'node')
       .call(d3.drag()
-        .on('start', dragstarted)
+        .on('start', onDragStart)
         .on('drag', dragged)
-        .on('end', dragended));
+        .on('end', onDragEnd));
 
     node.append('circle')
       .attr('r', 40)  // Adjust the radius to fit the text
@@ -62,7 +71,34 @@ function renderGraph(nodes, links) {
     });
 }
 
-function dragstarted(event, d) {
+// function render2DGraph(data) {
+//   const width = 800;
+//   const height = 600;
+
+//   // Clear any existing SVG elements
+//   d3.select('#graph').selectAll('*').remove();
+
+//   const svg = d3.select('#graph').append('svg')
+//     .attr('width', width)
+//     .attr('height', height);
+
+//   const node = svg.selectAll('.node')
+//     .data(data)
+//     .enter().append('g')
+//     .attr('class', 'node')
+//     .attr('transform', d => `translate(${d.x},${d.y})`);
+
+//   node.append('circle')
+//     .attr('r', 20)  // Adjust the radius to fit the text
+//     .attr('fill', '#69b3a2');
+
+//   node.append('text')
+//     .attr('dy', '.35em')
+//     .attr('text-anchor', 'middle')
+//     .attr('fill', '#fff')  // White text color for contrast
+//     .text(d => d.word);
+// }
+function onDragStart(event, d) {
     if (!event.active) simulation.alphaTarget(0.3).restart();
     d.fx = d.x;
     d.fy = d.y;
@@ -73,14 +109,14 @@ function dragged(event, d) {
     d.fy = event.y;
 }
 
-function dragended(event, d) {
+function onDragEnd(event, d) {
     if (!event.active) simulation.alphaTarget(0);
     d.fx = null;
     d.fy = null;
 }
 
 function addWord() {
-    const newWord = document.getElementById('newWord').value;
+    const newWord = document.querySelector('.addWord').value;
     if (newWord) {
       fetch('http://127.0.0.1:5000/add_word', {
         method: 'POST',
@@ -99,3 +135,7 @@ function addWord() {
 
 document.querySelector('#loadGraph').addEventListener('click', fetchGraphData);
 document.querySelector('#addButton').addEventListener('click', addWord);
+// document.querySelector('#word-input').addEventListener('change', function() {
+//   const word = this.value;
+//   fetch2DCoordinates(word);
+// });

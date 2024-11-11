@@ -2,8 +2,12 @@ import logging
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from functools import lru_cache
-from similarity import get_most_similar_words, read_file, write_file, get_data, add_node
-from files import DATA_FILE_PATH
+from word_embed import get_word_embedding
+from similarity import get_most_similar_words, get_data, add_node
+from files import DATA_FILE_PATH, COORDINATES_FILE_PATH
+from write_data import read_coordinates, write_coordinates
+from sklearn.manifold import TSNE
+import numpy as np
 
 app = Flask(__name__)
 CORS(app)
@@ -31,6 +35,39 @@ def similar_words():
         return jsonify({'message': f'No similar word found for {word}'}), 200
 
     return jsonify(result)
+
+# @app.route('/get_2d_coordinates', methods=['GET'])
+# def get_2d_coordinates():
+#     word = request.args.get('word')
+#     if not word:
+#         return jsonify({'error': 'Provide a word'}), 400
+
+#     data = get_data()
+#     node_list = data["nodes"]
+#     sample_vocab = [node['word'] for node in node_list if 'word' in node]
+
+#     if word not in sample_vocab:
+#         return jsonify({'error': f'Word {word} not found in vocabulary'}), 404
+
+#     coordinates_data = read_coordinates(COORDINATES_FILE_PATH)
+#     if word in coordinates_data:
+#             return jsonify(coordinates_data[word])
+
+#     similar_words = get_most_similar_words(word)
+#     words = [word] + [w['word'] for w in similar_words]
+#     embeddings = np.array([get_word_embedding(w) for w in words])
+
+#     tsne = TSNE(n_components=2)
+#     coordinates = tsne.fit_transform(embeddings)
+
+#     result = []
+#     for w, coord in zip(words, coordinates):
+#         result.append({'word': w, 'x': float(coord[0]), 'y': float(coord[1])})
+#     coordinates_data[word] = result
+#     write_coordinates(COORDINATES_FILE_PATH, coordinates_data)
+    
+    return jsonify(result)
+
 
 @app.route('/add_word', methods=['POST'])
 def add_word():
